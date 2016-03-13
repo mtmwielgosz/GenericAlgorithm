@@ -1,18 +1,26 @@
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 public class Individual {
 
-	private int number = 8;
-	private int[] chromosomes = new int[number];
+	private int nrOfChromosomes;
+	private int nrOfTypes;
+	private int[] chromosomes;
 	private double grade;
+	private Random ran = new Random();
+	private int baads = 0;
 	
-	public Individual(boolean random)
+	public Individual(int numberOfChromosomesForEachIndividual, int numberOfTypesOfChromosomes, boolean random)
 	{
+		nrOfChromosomes = numberOfChromosomesForEachIndividual;
+		nrOfTypes = numberOfTypesOfChromosomes;
+		chromosomes = new int[nrOfChromosomes];
+		
 		if(random)
-			for(int i = 0; i < number; i++)
+			for(int i = 0; i < nrOfChromosomes; i++)
 			{
-				Random ran = new Random();
-				chromosomes[i] = ran.nextInt(10);
+				chromosomes[i] = ran.nextInt(nrOfTypes);
 			}
 	}
 	
@@ -39,9 +47,23 @@ public class Individual {
 		this.grade = grade;
 	}
 	
-	public int getNumOfChromosomes()
+	public int getNrOfUniqueColors()
 	{
-		return number;
+		Set<Integer> colors = new HashSet<Integer>();
+		
+		for(int i = 0; i < nrOfChromosomes; i++)
+		{
+			colors.add(chromosomes[i]);
+		}
+		
+		return colors.size();
 	}
 
+	public int getBaads() {
+		return baads;
+	}
+
+	public void setBaads(int baads) {
+		this.baads = baads;
+	}
 }
