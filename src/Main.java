@@ -3,25 +3,27 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.Set;
 
 public class Main {
 
 	static boolean stopCondition = false;
-	static int maxGenerations = 1000;
-	static int numberOfPopulation = 800; 		// number of population must be even
+	static int maxGenerations = 5000;
+	static int numberOfPopulation = 1000; 		// number of population must be even
 	static double posForFirstParent = 0.6; 		// >
 //	static double posToMutate = 0.1;			// possibilities have to be between 0 and 1
 //	static double posForEachChrom = 0.01;		// <
 //	static double posToMutate = 0.1;			// possibilities have to be between 0 and 1
 //	static double posForEachChrom = 0.02;		// <
-//	static double posToMutate = 0.3;			// possibilities have to be between 0 and 1
-//	static double posForEachChrom = 0.025;		// <
-	static double posToMutate = 0.5;			// possibilities have to be between 0 and 1
-	static double posForEachChrom = 0.05;		// <
-	static int numberOfChromosomesForEachIndividual = 120;
-	static int numberOfTypesOfChromosomes = 110;
+	static double posToMutate = 0.3;			// possibilities have to be between 0 and 1
+	static double posForEachChrom = 0.025;		// <
+//	static double posToMutate = 0.5;			// possibilities have to be between 0 and 1
+//	static double posForEachChrom = 0.05;		// <
+	static int numberOfChromosomesForEachIndividual = 20;
+	static int numberOfTypesOfChromosomes = 30;
 	static int numberOfPeaks = numberOfChromosomesForEachIndividual;
 	static int[][] graph = new int[numberOfPeaks][numberOfPeaks];
 	static int valueOfGrade = 2;
@@ -40,7 +42,7 @@ public class Main {
 	{	
 //		graph[0][1] = 3;
 //		graph[1][2] = 5;
-//		graph[1][3] = 2;
+//		graph[2][0] = 2;
 //		graph[2][3] = 4;
 //		graph[3][4] = 4;
 //		graph[1][5] = 2;
@@ -48,6 +50,7 @@ public class Main {
 		getGraph("D:\\Files\\GEOM" + numberOfChromosomesForEachIndividual + ".txt", numberOfPeaks);
 		
 		Long now = (new Date()).getTime();
+
 		while(!stopCondition)
 		{
 			Population[] pop = new Population[maxGenerations];
@@ -69,8 +72,11 @@ public class Main {
 			numberOfTypesOfChromosomes --;
 			runIndex = 0;
 		}
+		
+//		int[] colors = result();
+		
 		Long then = (new Date()).getTime();
-		toFile("GEM"+ numberOfChromosomesForEachIndividual + "_pop" + numberOfPopulation + "_posMut" + posToMutate * posForEachChrom + "_posCross" + posForFirstParent + "_DOUBLED.csv", (then - now) / 1000);
+		toFile("GEM"+ numberOfChromosomesForEachIndividual + "_BESTRES.csv", (then - now) / 1000);
 	}
 	
 	public static void evaluate(Population p)
@@ -97,7 +103,7 @@ public class Main {
 					if(graph[j][k] > 0 && j != k)
 					{
 					//	System.out.println("Comparing:" + j + " with " + k);
-						if(Math.abs(color1 - color2) > graph[j][k])
+						if(Math.abs(color1 - color2) >= graph[j][k])
 						{
 							//diff = Math.pow(2, (Math.abs(color1 - color2) / 10));
 							diff = Math.pow(2, punishment);
@@ -226,5 +232,95 @@ public class Main {
 		
 		writer.close();
 	}
+	
+	public static void toFile2(String name, Long time, int[] colors) throws FileNotFoundException, UnsupportedEncodingException
+	{
+		PrintWriter writer = new PrintWriter("D:\\Files\\Results\\GEOM" + numberOfChromosomesForEachIndividual + "\\" + name, "UTF-8");
+		writer.println("kolory: " + getNrOfUniqueColors(colors) + ";zakres: " + getRange(colors)+ ";czas [sekund]: " + time);
+		
+		
+		writer.close();
+	}
+	
+	
+	public static int[] result()
+	{
+		Peak[] peaks = new Peak[graph.length];
+		
+		for(int i = 0; i < graph.length; i++)
+			peaks[i] = new Peak(graph.length);
+		
+		for(int i = 0; i < graph.length; i++)
+		{
+			for(int j = 0; j < graph[i].length; j++)
+			{
+				if(graph[i][j] > 0)
+				{
+					peaks[i].edge[j] = graph[i][j];
+					peaks[j].edge[i] = graph[i][j];
+				}
+			}
+		}
+		
+		
+		int[] colors = new int[graph.length];
+		int candidate = 1;
+		for(int i = 0; i < peaks.length; i++)
+		{
+			candidate = 1;
+			for(int j = 0; j < peaks[i].edge.length; j++)
+			{
+				
+				if(peaks[i].edge[j] > 0)
+				{
+					if(colors[j] > 0 && candidate < colors[j] + peaks[i].edge[j])
+					{
+						candidate = colors[j] + peaks[i].edge[j];
+					}
+				}
+
+			}
+			colors[i] = candidate;
+			System.out.print(candidate + ", ");
+		}
+		
+		return colors;
+	}
+	
+	public static int getNrOfUniqueColors(int[] c)
+	{
+		Set<Integer> colors = new HashSet<Integer>();
+		
+		for(int i = 0; i < c.length; i++)
+		{
+			colors.add(c[i]);
+		}
+		
+		return colors.size();
+	}
+	
+	public static int getRange(int[] c)
+	{
+		return getMax(c) - getMin(c);
+	}
+	
+	public static int getMax(int[] c)
+	{
+		int max = c[0];
+		for(int i = 1; i < c.length; i++)
+			if(c[i] > max)
+				max = c[i];
+		return max;
+	}
+	
+	public static int getMin(int[] c)
+	{
+		int min = c[0];
+		for(int i = 1; i < c.length; i++)
+			if(c[i] < min)
+				min = c[i];
+		return min;
+	}
+	
 
 }

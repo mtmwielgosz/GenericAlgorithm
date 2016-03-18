@@ -59,67 +59,67 @@ public class Population {
 	{		
 		Population nextGen = new Population(numberOfIndividuals, nrOfChromosomes, nrOfTypes, false);
 		
-//		System.out.println("Before sort:");
-//		showPop(this);
-		
-		sort(wholePopulation, 0, wholePopulation.length - 1);
-		Individual temp;
-		for(int i = 0; i < wholePopulation.length/2; i++)
-		{
-			temp = wholePopulation[i];
-			wholePopulation[i] = wholePopulation[wholePopulation.length - i - 1];
-			wholePopulation[wholePopulation.length - i - 1] = temp;
-
-		}
-		
-//		System.out.println("\nAfter sort:");
-//		showPop(this);
-		
-		int len = wholePopulation.length;
-		int howManyDone = 0;
-		int border = len/4;
-		for(int i = 0; i < border; i++)
-		{
-			nextGen.add(wholePopulation[i]);
-			nextGen.add(wholePopulation[i]);
-			nextGen.add(wholePopulation[i]);
-			howManyDone += 3;
-		}
-		
-		while(howManyDone < len)
-		{
-			nextGen.add(wholePopulation[border]);
-			border ++;
-			howManyDone ++;
-		}
-		
-//		System.out.println("\nbEFORE mix:");
-//		showPop(nextGen);
-		mix(nextGen.wholePopulation);
-//		System.out.println("\nAfter :");
-//		showPop(nextGen);
+////		System.out.println("Before sort:");
+////		showPop(this);
+//		
+//		sort(wholePopulation, 0, wholePopulation.length - 1);
+//		Individual temp;
+//		for(int i = 0; i < wholePopulation.length/2; i++)
+//		{
+//			temp = wholePopulation[i];
+//			wholePopulation[i] = wholePopulation[wholePopulation.length - i - 1];
+//			wholePopulation[wholePopulation.length - i - 1] = temp;
+//
+//		}
+//		
+////		System.out.println("\nAfter sort:");
+////		showPop(this);
+//		
+//		int len = wholePopulation.length;
+//		int howManyDone = 0;
+//		int border = len/4;
+//		for(int i = 0; i < border; i++)
+//		{
+//			nextGen.add(wholePopulation[i]);
+//			nextGen.add(wholePopulation[i]);
+//			nextGen.add(wholePopulation[i]);
+//			howManyDone += 3;
+//		}
+//		
+//		while(howManyDone < len)
+//		{
+//			nextGen.add(wholePopulation[border]);
+//			border ++;
+//			howManyDone ++;
+//		}
+//		
+////		System.out.println("\nbEFORE mix:");
+////		showPop(nextGen);
+//		mix(nextGen.wholePopulation);
+////		System.out.println("\nAfter :");
+////		showPop(nextGen);
 			
 	
 		
-//// ----- start roulette wheel algorithm 
-//	
+// ----- start roulette wheel algorithm 
+	
 //		System.out.println("I am in selection, let me roullete ppl :)");
-//        rouletteWheel[0] = 0;
-//        for (int i = 0; i < numberOfIndividuals; i++) 
-//        {
-//        	rouletteWheel[i+1] = rouletteWheel[i] + wholePopulation[i].getGrade();
-//            total += wholePopulation[i].getGrade();
-//        }
-//        
-//        for(int i = 0; i < numberOfIndividuals; i++)
-//        {
-//        	int result = spin();
-//	        Individual ind = wholePopulation[result];
-//	 //     System.out.println("I've chosen person with grade: " + ind.getGrade());
-//	        nextGen.add(ind);
-//        }
-//// ----- end roulette wheel algorithm
+        rouletteWheel[0] = 0;
+        for (int i = 0; i < numberOfIndividuals; i++) 
+        {
+        	rouletteWheel[i+1] = rouletteWheel[i] + wholePopulation[i].getGrade();
+            total += wholePopulation[i].getGrade();
+        }
         
+        for(int i = 0; i < numberOfIndividuals; i++)
+        {
+        	int result = spin();
+	        Individual ind = wholePopulation[result];
+	 //     System.out.println("I've chosen person with grade: " + ind.getGrade());
+	        nextGen.add(ind);
+        }
+// ----- end roulette wheel algorithm
+       
         return nextGen;
 	}
 	
@@ -233,7 +233,7 @@ public class Population {
 			{
 				for(int j = 0; j < nrOfChromosomes; j++)
 					if(yes(posForEachChrom))
-						forChild[j] = (parent.get(j) + ran.nextInt(nrOfTypes)) % (nrOfTypes - 1);
+						forChild[j] = (parent.get(j) + ran.nextInt(nrOfTypes ) % (nrOfTypes - 1));
 					else
 						forChild[j] = parent.get(j);
 				child.setChromosomes(forChild);
